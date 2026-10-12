@@ -1,0 +1,204 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>ShopPilot — Stock &amp; Profit Manager</title><meta name="theme-color" content="#0f6b4f"><meta name="description" content="Simple stock, sales, expenses, debts and profit tracking for small shops.">
+<style>
+:root{--bg:#f4f6f3;--card:#fff;--ink:#16231d;--mut:#6b7a72;--g:#0f6b4f;--g2:#e3f2ec;--a:#f0a020;--r:#c93a3a;--line:#e1e7e3}
+@media(prefers-color-scheme:dark){:root{--bg:#0f1713;--card:#17231d;--ink:#e8f0ec;--mut:#8fa196;--g:#38c28f;--g2:#1b3328;--line:#263830}}
+*{box-sizing:border-box}body{margin:0;font:15px/1.45 system-ui,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--ink)}
+header{background:var(--g);color:#fff;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:5}
+header b{font-size:19px;letter-spacing:.3px}header small{opacity:.85;cursor:pointer}
+nav{display:flex;gap:4px;overflow-x:auto;padding:8px;background:var(--card);border-bottom:1px solid var(--line);position:sticky;top:52px;z-index:4}
+nav button{border:0;background:none;color:var(--mut);padding:8px 13px;border-radius:20px;font:600 14px inherit;white-space:nowrap;cursor:pointer}
+nav button.on{background:var(--g2);color:var(--g)}
+main{max-width:900px;margin:0 auto;padding:12px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:12px}
+h3{margin:0 0 10px;font-size:16px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px}.stat span{color:var(--mut);font-size:12px}.stat b{display:block;font-size:21px;margin-top:2px}
+.pos{color:var(--g)}.neg{color:var(--r)}
+input,select{width:100%;padding:10px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);font:inherit}
+.f{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;margin-bottom:8px}
+label{font-size:12px;color:var(--mut)}
+.btn{background:var(--g);color:#fff;border:0;padding:10px 16px;border-radius:10px;font:600 14px inherit;cursor:pointer}
+.btn.s{padding:5px 10px;font-size:12px}.btn.o{background:var(--g2);color:var(--g)}.btn.d{background:#fbe6e6;color:var(--r)}
+table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:8px 6px;border-bottom:1px solid var(--line);font-size:14px}th{color:var(--mut);font-size:12px;font-weight:600}
+.r{text-align:right}.tw{overflow-x:auto}
+.warn{background:#fff4e0;border:1px solid var(--a);color:#7a4b00;border-radius:12px;padding:10px 12px;margin-bottom:12px}
+@media(prefers-color-scheme:dark){.warn{background:#3a2c10;color:#ffd58a}}
+.pill{padding:2px 8px;border-radius:12px;font-size:12px;font-weight:600}.ok{background:var(--g2);color:var(--g)}.low{background:#fde8c8;color:#8a5200}.out{background:#fbe6e6;color:var(--r)}
+.bars{display:flex;gap:6px;align-items:flex-end;height:110px}.bars div{flex:1;text-align:center;font-size:11px;color:var(--mut)}.bars i{display:block;border-radius:5px 5px 0 0;background:var(--g);min-height:3px}.bars i.n{background:var(--r)}
+.hide{display:none}.empty{color:var(--mut);padding:10px 0}
+@media print{header,nav,.noprint{display:none!important}body{background:#fff;color:#000}}
+</style><style>
+html[data-theme=emerald]{--bg:#f2f7f4;--card:#fff;--ink:#16231d;--mut:#66776e;--g:#0f6b4f;--g3:#22a77a;--g2:#e1f3ea;--line:#e0e8e3;--a:#f0a020;--r:#c93a3a;--wb:#fff4e0;--wi:#7a4b00;--ob:#fbe6e6;--lb:#fde8c8;--li:#8a5200;--gl1:#34d399;--gl2:#a7f3d0;--gl3:#facc15}
+html[data-theme=ocean]{--bg:#eef5fc;--card:#fff;--ink:#0f1e2e;--mut:#607489;--g:#0b63c5;--g3:#0ea5e9;--g2:#dcecfb;--line:#dae5f1;--a:#f0a020;--r:#c93a3a;--wb:#fff4e0;--wi:#7a4b00;--ob:#fbe6e6;--lb:#fde8c8;--li:#8a5200;--gl1:#38bdf8;--gl2:#93c5fd;--gl3:#67e8f9}
+html[data-theme=violet]{--bg:#f5f1fc;--card:#fff;--ink:#20143a;--mut:#74698a;--g:#6d28d9;--g3:#a855f7;--g2:#ece3fb;--line:#e5dcf3;--a:#f0a020;--r:#c93a3a;--wb:#fff4e0;--wi:#7a4b00;--ob:#fbe6e6;--lb:#fde8c8;--li:#8a5200;--gl1:#a78bfa;--gl2:#f0abfc;--gl3:#818cf8}
+html[data-theme=rose]{--bg:#fdf1f5;--card:#fff;--ink:#3a1424;--mut:#8a6672;--g:#be185d;--g3:#f43f5e;--g2:#fde1ea;--line:#f3dbe3;--a:#f0a020;--r:#b91c1c;--wb:#fff4e0;--wi:#7a4b00;--ob:#fbe6e6;--lb:#fde8c8;--li:#8a5200;--gl1:#fb7185;--gl2:#f9a8d4;--gl3:#fdba74}
+html[data-theme=midnight]{--bg:#0a0f1e;--card:#121a31;--ink:#e8ecff;--mut:#8f9bc4;--g:#6674f5;--g3:#38bdf8;--g2:#1c2750;--line:#222c50;--a:#fbbf24;--r:#f87171;--wb:#3a2c10;--wi:#ffd58a;--ob:#3d1c24;--lb:#3a2c10;--li:#ffd58a;--gl1:#6366f1;--gl2:#22d3ee;--gl3:#a855f7}
+header{background:linear-gradient(135deg,var(--g),var(--g3));box-shadow:0 4px 18px -8px var(--g)}
+.btn{background:linear-gradient(135deg,var(--g),var(--g3))}
+.pill.low{background:var(--lb);color:var(--li)}.pill.out{background:var(--ob);color:var(--r)}.btn.d{background:var(--ob);color:var(--r)}.warn{background:var(--wb);color:var(--wi)}
+input[type=checkbox]{width:auto}.row{display:flex;gap:8px;align-items:center;margin-top:14px;font-size:14px;color:var(--ink)}
+.card,.stat{background:color-mix(in srgb,var(--card) 90%,transparent);backdrop-filter:blur(8px);transition:transform .25s,box-shadow .25s,background-color .4s,border-color .4s}
+.card:hover,.stat:hover{transform:translateY(-2px);box-shadow:0 10px 26px -14px rgba(0,0,0,.35)}
+body,nav,input,select{transition:background-color .4s,color .4s,border-color .4s}
+.btn,nav button{transition:transform .15s,box-shadow .2s,background .25s,color .25s}
+.btn:hover{transform:translateY(-1px);box-shadow:0 6px 16px -6px var(--g)}.btn:active{transform:scale(.97)}
+.glows{position:fixed;inset:0;overflow:hidden;pointer-events:none;z-index:0}
+.glows i{position:absolute;border-radius:50%;filter:blur(70px);opacity:.28;animation:drift 18s ease-in-out infinite alternate}
+.glows i:nth-child(1){width:46vmax;height:46vmax;left:-12vmax;top:-10vmax;background:var(--gl1)}
+.glows i:nth-child(2){width:38vmax;height:38vmax;right:-10vmax;top:30vh;background:var(--gl2);animation-duration:23s;animation-delay:-6s}
+.glows i:nth-child(3){width:34vmax;height:34vmax;left:20vw;bottom:-14vmax;background:var(--gl3);animation-duration:27s;animation-delay:-12s;opacity:.2}
+@keyframes drift{0%{transform:translate(0,0) scale(1)}50%{transform:translate(6vmax,-4vmax) scale(1.12)}100%{transform:translate(-4vmax,6vmax) scale(.95)}}
+main{position:relative;z-index:1}
+@keyframes rise{from{opacity:0;transform:translateY(14px)}}
+main.enter>*{animation:rise .5s cubic-bezier(.2,.8,.2,1) backwards}
+main.enter>*:nth-child(2){animation-delay:.06s}main.enter>*:nth-child(3){animation-delay:.12s}main.enter>*:nth-child(4){animation-delay:.18s}main.enter>*:nth-child(n+5){animation-delay:.24s}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(240,160,32,.55)}50%{box-shadow:0 0 0 6px rgba(240,160,32,0)}}
+.pill.low,.pill.out{animation:pulse 2s infinite}
+.bars i{transform-origin:bottom;animation:grow .8s cubic-bezier(.2,.8,.2,1) backwards}@keyframes grow{from{transform:scaleY(0)}}
+.fly{display:inline-block;animation:fly 4s ease-in-out infinite}@keyframes fly{50%{transform:translate(3px,-3px) rotate(8deg)}}
+.themes{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px}
+.sw{border:3px solid transparent;border-radius:14px;height:66px;color:#fff;font:700 13px inherit;cursor:pointer;display:flex;align-items:flex-end;padding:8px;text-align:left;transition:transform .2s,border-color .2s}
+.sw:hover{transform:translateY(-2px)}.sw.on{border-color:var(--ink)}.sw.on span::after{content:" ✓"}.sw span{text-shadow:0 1px 3px rgba(0,0,0,.4)}
+body.nomo *,body.nomo *::before{animation:none!important;transition:none!important}body.nomo .glows{display:none}
+</style>
+<script>try{document.documentElement.dataset.theme=JSON.parse(localStorage.getItem("sp_prefs")).theme}catch(e){}</script>
+<style>
+nav button{display:flex;flex-direction:column;align-items:center;gap:2px}nav button em{font-style:normal}
+@media(min-width:641px){nav button{flex-direction:row;gap:6px}}
+.au{position:fixed;inset:0;z-index:60;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:16px;overflow:auto}.auc{width:100%;max-width:380px}.auc label{display:block;margin:10px 0 4px}
+.rcw{position:fixed;inset:0;z-index:70;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;padding:16px}.rcb{background:#fff;color:#111;border-radius:14px;padding:18px;width:100%;max-width:340px;max-height:90vh;overflow:auto}.rcb td{border-color:#ddd}
+@media(max-width:640px){nav{position:fixed;top:auto;bottom:0;left:0;right:0;justify-content:space-around;padding:6px 4px calc(6px + env(safe-area-inset-bottom));border-top:1px solid var(--line);border-bottom:0;box-shadow:0 -6px 20px -12px rgba(0,0,0,.4)}nav button{flex:1;padding:6px 2px;border-radius:12px;min-width:0;font-size:10.5px}body{padding-bottom:84px}input,select{font-size:16px;min-height:44px}.btn{min-height:42px}.btn.s{min-height:34px}}
+@media print{body>*:not(#rc){display:none!important}.rcw{position:static;background:none;padding:0}.rcb{max-width:none;max-height:none}}
+</style>
+</head><body>
+<div class="glows"><i></i><i></i><i></i></div><header><b><span class="fly">&#9992;</span> ShopPilot</b><span><small id="shop" title="Settings"></small> &nbsp;·&nbsp; <small id="out" onclick="logout()">Log out</small></span></header>
+<nav id="nav"></nav><main id="app"></main>
+<script>
+window.P=Object.assign({theme:"emerald",motion:!(window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches),cur:"KSh",minq:5,phone:"",place:"",lastBackup:""},(()=>{try{return JSON.parse(localStorage.getItem("sp_prefs"))||{}}catch(e){return{}}})());
+window.applyP=()=>{document.documentElement.dataset.theme=P.theme;document.body.classList.toggle("nomo",!P.motion)};
+window.setP=(k,v)=>{P[k]=v;try{localStorage.setItem("sp_prefs",JSON.stringify(P))}catch(e){}applyP();try{draw()}catch(e){}};
+applyP();
+</script>
+<script>const $=s=>document.querySelector(s),fmt=n=>(P.cur||"KSh")+" "+Math.round(n||0).toLocaleString(),esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+let TABS=["Dashboard"],ME=null,O=null;const iso=d=>new Date(d.getTime()-d.getTimezoneOffset()*6e4).toISOString().slice(0,10);let rt=iso(new Date()),rf=rt.slice(0,8)+"01";let tab="Dashboard",D={},cart=[],edit=null,rep=null,month=new Date().toISOString().slice(0,7);
+const post=async(p,b)=>{const r=await fetch("/api/"+p,{method:"POST",headers:{"Content-Type":"application/json","X-Requested-With":"ShopPilot"},body:JSON.stringify(b)}),j=await r.json();if(r.status==401&&p!="logout"){authScreen();throw j}if(!r.ok){alert(j.error);throw j}return j};
+const load=async()=>{if(ME&&ME.role=="owner")return ownerLoad();const r=await fetch("/api/data");if(r.status==401)return authScreen();D=await r.json();if(tab=="Reports"){const q=await fetch("/api/report?from="+rf+"&to="+rt);if(q.ok)rep=await q.json()}draw()};
+const val=id=>$("#"+id).value;
+const cls=n=>n<0?"neg":"pos";
+function draw(){
+ $("#shop").textContent=D.shop+" ✎";
+ $("#nav").innerHTML=TABS.map(t=>`<button class="${t==tab?"on":""}" onclick="tab='${t}';load()">${IC[t]||""}<em>${t}</em></button>`).join("");
+ const low=D.products.filter(p=>p.qty<=p.minq);
+ $("#app").innerHTML=({Dashboard:dash,Sell:sell,Stock:stock,Expenses:expn,Debts:debts,Reports:reports,Settings:settings,Overview:ownerOverview,Shops:ownerShops,Account:account})[tab](low);
+}
+function lowBox(low){return low.length?`<div class="warn"><b>⚠ Running low (${low.length})</b><br>${low.map(p=>`${esc(p.name)} — ${p.qty<=0?"<b>OUT</b>":p.qty+" left"}`).join(" · ")}</div>`:""}
+function dash(low){const t=D.today,mx=Math.max(1,...D.week.map(w=>Math.abs(w.net)));
+ const owed=D.debts.filter(d=>d.kind=="owed").reduce((a,d)=>a+d.amount-d.paid,0),owe=D.debts.filter(d=>d.kind=="owe").reduce((a,d)=>a+d.amount-d.paid,0);
+ return planBox()+lowBox(low)+`<div class="grid" style="margin-bottom:12px"><div class="stat"><span>Today's sales</span><b>${fmt(t.sales)}</b></div>
+ <div class="stat"><span>Gross profit</span><b class="pos">${fmt(t.gross)}</b></div><div class="stat"><span>Expenses today</span><b>${fmt(t.expenses)}</b></div>
+ <div class="stat"><span>Net profit today</span><b class="${cls(t.net)}">${fmt(t.net)}</b></div>
+ <div class="stat"><span>Customers owe you</span><b>${fmt(owed)}</b></div><div class="stat"><span>You owe suppliers</span><b>${fmt(owe)}</b></div></div>
+ <div class="card"><h3>Net profit — last 7 days</h3><div class="bars">${D.week.map(w=>`<div><i class="${w.net<0?"n":""}" style="height:${Math.abs(w.net)/mx*80}px"></i>${w.d}</div>`).join("")}</div></div>
+ <div class="card"><h3>Recent sales</h3>${salesTable(D.sales.slice(0,6))}</div>`}
+function salesTable(s,undo){return s.length?`<div class="tw"><table><tr><th>Date</th><th>Item</th><th class="r">Qty</th><th class="r">Total</th><th></th>${undo?"<th></th>":""}</tr>${s.map(x=>`<tr><td>${x.date.slice(5)}</td><td>${esc(x.pname)}${x.customer?` <small>(${esc(x.customer)})</small>`:""}</td><td class="r">${x.qty}</td><td class="r">${fmt(x.qty*x.price)}</td><td><button class="btn s o" onclick="showReceipt(${x.receipt_id})">🧾</button></td>${undo?`<td><button class="btn s d" onclick="if(confirm('Void this item and return it to stock?'))post('sale_delete',{id:${x.id}}).then(load)">Void</button></td>`:""}</tr>`).join("")}</table></div>`:`<div class="empty">No sales yet.</div>`}
+function sell(low){const t=cart.reduce((a,i)=>a+i.qty*i.price,0);
+ return lowBox(low)+`<div class="card"><h3>New sale</h3><div class="f"><div style="grid-column:1/-1"><label>Search product</label><input id="ss" placeholder="Type to search…" oninput="fs(this.value)"></div><div><label>Product</label><select id="sp" onchange="pickP()">${D.products.filter(p=>p.qty>0).map(p=>`<option value="${p.id}">${esc(p.name)} (${p.qty})</option>`).join("")}</select></div>
+ <div><label>Qty</label><input id="sq" type="number" min="1" value="1"></div><div><label>Price each</label><input id="spr" type="number"></div></div>
+ <button class="btn o" onclick="addCart()">+ Add to cart</button>
+ ${cart.length?`<table style="margin-top:10px">${cart.map((i,k)=>`<tr><td>${esc(i.name)}</td><td class="r">${i.qty} × ${fmt(i.price)}</td><td class="r">${fmt(i.qty*i.price)}</td><td><button class="btn s d" onclick="cart.splice(${k},1);draw()">✕</button></td></tr>`).join("")}</table>
+ <h3 style="margin-top:12px">Total: ${fmt(t)}</h3><div class="f"><div><label>Customer (needed for credit)</label><input id="cu"></div><div><label>Payment</label><select id="cr"><option value="">Paid (cash / M-Pesa)</option><option value="1">On credit (debt)</option></select></div></div>
+ <button class="btn" onclick="done()">Complete sale</button>`:""}</div><div class="card"><h3>Recent sales</h3>${salesTable(D.sales,1)}</div>`}
+function pickP(){const p=D.products.find(p=>p.id==val("sp"));if(p)$("#spr").value=p.sell}
+function addCart(){const p=D.products.find(p=>p.id==val("sp"));if(!p)return;const q=+val("sq"),pr=+val("spr");if(q<=0||q>p.qty)return alert("Only "+p.qty+" in stock");cart.push({pid:p.id,name:p.name,qty:q,price:pr});draw()}
+async function done(){const j=await post("sale",{items:cart,customer:val("cu"),credit:!!val("cr")});cart=[];await load();showReceipt(j.receipt)}
+function stock(low){const e=edit&&D.products.find(p=>p.id==edit)||{};
+ return lowBox(low)+`<div class="card"><h3>${e.id?"Edit product":"Add product"}</h3><div class="f">
+ <div><label>Name</label><input id="n" value="${esc(e.name)}"></div><div><label>Category</label><input id="c" value="${esc(e.category)}" placeholder="e.g. Lotions, Nails"></div>
+ <div><label>Buying price</label><input id="b" type="number" value="${e.buy??""}"></div><div><label>Selling price</label><input id="s" type="number" value="${e.sell??""}"></div>
+ <div><label>Quantity</label><input id="q" type="number" value="${e.qty??""}"></div><div><label>Warn when below</label><input id="m" type="number" value="${e.minq??P.minq}"></div></div>
+ <button class="btn" onclick="saveP()">${e.id?"Save changes":"Add product"}</button> ${e.id?`<button class="btn o" onclick="edit=null;draw()">Cancel</button>`:""}</div>
+ <div class="card"><h3>Stock (${D.products.length} products · worth ${fmt(D.products.reduce((a,p)=>a+p.qty*p.buy,0))})</h3>${D.products.length?`<input placeholder="🔍 Search products…" oninput="ft(this.value)" style="margin-bottom:8px"><div class="tw"><table><tr><th>Product</th><th class="r">Buy</th><th class="r">Sell</th><th class="r">Qty</th><th></th></tr>
+ ${D.products.map(p=>`<tr data-n="${esc((p.name+" "+p.category).toLowerCase())}"><td>${esc(p.name)}<br><small style="color:var(--mut)">${esc(p.category)}</small></td><td class="r">${fmt(p.buy)}</td><td class="r">${fmt(p.sell)}</td>
+ <td class="r"><span class="pill ${p.qty<=0?"out":p.qty<=p.minq?"low":"ok"}">${p.qty}</span></td>
+ <td style="white-space:nowrap"><button class="btn s o" onclick="restock(${p.id})">+Stock</button> <button class="btn s o" onclick="edit=${p.id};draw();scrollTo(0,0)">Edit</button> <button class="btn s d" onclick="if(confirm('Remove this product? Past sales are kept.'))post('product_delete',{id:${p.id}}).then(load)">✕</button></td></tr>`).join("")}</table></div>`:`<div class="empty">Add your first product above.</div>`}</div>`}
+async function saveP(){await post("product_save",{id:edit,name:val("n"),category:val("c"),buy:val("b"),sell:val("s"),qty:val("q"),minq:val("m")});edit=null;load()}
+async function restock(id){const p=D.products.find(p=>p.id==id),q=prompt("Quantity bought of "+p.name+"?");if(!q)return;const c=prompt("Buying price each?",p.buy);if(c===null)return;
+ const s=prompt("Supplier name (optional)")||"";const cr=s&&confirm("Bought on credit? OK = add to what you owe "+s);await post("restock",{id,qty:q,cost:c,supplier:s,credit:cr});load()}
+function expn(low){const tot=D.expenses.filter(e=>e.date.slice(0,7)==month).reduce((a,e)=>a+e.amount,0);
+ return `<div class="card"><h3>Record expense</h3><div class="f"><div><label>Category</label><select id="ec">${["Rent","Transport","Salaries","Electricity","Water","Airtime","Licence","Packaging","Other"].map(x=>`<option>${x}</option>`).join("")}</select></div>
+ <div><label>Amount</label><input id="ea" type="number"></div><div><label>Date</label><input id="ed" type="date" value="${D.today.date}"></div><div><label>Note</label><input id="en"></div></div>
+ <button class="btn" onclick="post('expense_add',{cat:val('ec'),amount:val('ea'),date:val('ed'),note:val('en')}).then(load)">Save expense</button></div>
+ <div class="card"><h3>This month: ${fmt(tot)}</h3>${D.expenses.length?`<div class="tw"><table>${D.expenses.map(e=>`<tr><td>${e.date.slice(5)}</td><td>${esc(e.cat)}<br><small>${esc(e.note)}</small></td><td class="r">${fmt(e.amount)}</td><td><button class="btn s d" onclick="post('expense_delete',{id:${e.id}}).then(load)">✕</button></td></tr>`).join("")}</table></div>`:`<div class="empty">No expenses yet.</div>`}</div>`}
+function debts(){const L=k=>{const l=D.debts.filter(d=>d.kind==k);return l.length?`<div class="tw"><table>${l.map(d=>{const bal=d.amount-d.paid;return `<tr><td>${esc(d.party)}<br><small>${d.date} ${esc(d.note)}</small></td><td class="r">${bal>0?`<b>${fmt(bal)}</b><br><small>of ${fmt(d.amount)}</small>`:`<span class="pill ok">Cleared</span>`}</td>
+ <td style="white-space:nowrap">${bal>0?`<button class="btn s" onclick="pay(${d.id},${bal})">Payment</button> `:""}<button class="btn s d" onclick="if(confirm('Delete?'))post('debt_delete',{id:${d.id}}).then(load)">✕</button></td></tr>`}).join("")}</table></div>`:`<div class="empty">None.</div>`};
+ return `<div class="card"><h3>Add debt</h3><div class="f"><div><label>Type</label><select id="dk"><option value="owed">Customer owes me</option><option value="owe">I owe supplier</option></select></div><div><label>Name</label><input id="dp"></div><div><label>Amount</label><input id="da" type="number"></div><div><label>Note</label><input id="dn"></div></div>
+ <button class="btn" onclick="post('debt_add',{kind:val('dk'),party:val('dp'),amount:val('da'),note:val('dn')}).then(load)">Save debt</button></div>
+ <div class="card"><h3>Customers who owe you</h3>${L("owed")}</div><div class="card"><h3>What you owe suppliers</h3>${L("owe")}</div>`}
+async function pay(id,bal){const a=prompt("Amount paid (balance "+fmt(bal)+")",bal);if(a)post("debt_pay",{id,amount:a}).then(load)}
+function reports(){const r=rep;if(!r)return "";
+ return `<div class="card noprint"><div class="f"><div><label>From</label><input type="date" value="${rf}" onchange="rf=this.value;load()"></div><div><label>To</label><input type="date" value="${rt}" onchange="rt=this.value;load()"></div></div><div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px">${[["Today","t"],["7 days","w"],["This month","m"],["Last month","l"]].map(q=>`<button class="btn s o" onclick="rq('${q[1]}')">${q[0]}</button>`).join("")}</div><button class="btn" onclick="print()">Print / Save PDF</button> <a class="btn o" href="/api/report.csv?from=${rf}&to=${rt}" style="display:inline-block;text-decoration:none">Download CSV</a></div>
+ <h2 style="margin:4px 4px 10px">${esc(D.shop)} — ${r.month} report</h2>${D.place||D.phone?`<div style="margin:-6px 4px 10px;color:var(--mut)">${esc(D.place)} ${esc(D.phone)}</div>`:""}
+ <div class="grid" style="margin-bottom:12px"><div class="stat"><span>Sales</span><b>${fmt(r.revenue)}</b></div><div class="stat"><span>Cost of goods sold</span><b>${fmt(r.cogs)}</b></div><div class="stat"><span>Gross profit</span><b class="pos">${fmt(r.gross)}</b></div>
+ <div class="stat"><span>Expenses</span><b>${fmt(r.expenses)}</b></div><div class="stat"><span>NET PROFIT</span><b class="${cls(r.net)}">${fmt(r.net)}</b></div><div class="stat"><span>Profit margin</span><b>${r.revenue?Math.round(r.gross/r.revenue*100):0}%</b></div><div class="stat"><span>Stock bought</span><b>${fmt(r.bought)}</b></div>
+ <div class="stat"><span>Stock value now</span><b>${fmt(r.stock_value)}</b></div><div class="stat"><span>Owed to you</span><b>${fmt(r.owed)}</b></div><div class="stat"><span>You owe</span><b>${fmt(r.owe)}</b></div></div>
+ <div class="card"><h3>Best sellers (by profit)</h3>${r.top.length?`<table><tr><th>Product</th><th class="r">Sold</th><th class="r">Profit</th></tr>${r.top.map(t=>`<tr><td>${esc(t.pname)}</td><td class="r">${t.q}</td><td class="r">${fmt(t.profit)}</td></tr>`).join("")}</table>`:`<div class="empty">No sales this month.</div>`}</div>
+ <div class="card"><h3>Expenses by category</h3>${r.exp.length?`<table>${r.exp.map(e=>`<tr><td>${esc(e.cat)}</td><td class="r">${fmt(e.amt)}</td></tr>`).join("")}</table>`:`<div class="empty">None.</div>`}</div>
+ <div class="card"><h3>Receipts</h3>${r.sales.length?`<div class="tw"><table><tr><th>#</th><th>Date</th><th>Customer</th><th class="r">Total</th><th></th></tr>${r.sales.map(s=>`<tr><td>${s.no}</td><td>${s.date.slice(5)}</td><td>${esc(s.customer)}</td><td class="r">${fmt(s.total)}</td><td><button class="btn s o" onclick="showReceipt(${s.id})">🧾</button></td></tr>`).join("")}</table></div>`:`<div class="empty">No receipts in this period.</div>`}</div><div class="card"><h3>In stock but not selling</h3>${r.dead.length?`<table>${r.dead.map(d=>`<tr><td>${esc(d.name)}</td><td class="r">${d.qty} left</td></tr>`).join("")}</table>`:`<div class="empty">Everything is moving 🎉</div>`}</div><div class="card"><h3>Daily breakdown</h3>${r.days.length?`<table><tr><th>Date</th><th class="r">Sales</th><th class="r">Profit</th></tr>${r.days.map(d=>`<tr><td>${d.date}</td><td class="r">${fmt(d.rev)}</td><td class="r">${fmt(d.rev-d.cogs)}</td></tr>`).join("")}</table>`:`<div class="empty">No data.</div>`}</div>`}
+const IC={Dashboard:"📊",Sell:"🛒",Stock:"📦",Expenses:"💸",Debts:"📒",Reports:"📈",Settings:"⚙️",Overview:"📊",Shops:"🏪",Account:"👤"};
+const THEMES=[["emerald","Emerald Forest","#0f6b4f","#22a77a"],["ocean","Ocean Blue","#0b63c5","#0ea5e9"],["violet","Royal Violet","#6d28d9","#a855f7"],["rose","Rose Glow","#be185d","#f43f5e"],["midnight","Midnight","#0a0f1e","#6674f5"]];
+const ft=v=>{v=v.toLowerCase();document.querySelectorAll("[data-n]").forEach(r=>r.style.display=r.dataset.n.includes(v)?"":"none")};
+function fs(v){v=v.toLowerCase();$("#sp").innerHTML=D.products.filter(p=>p.qty>0&&(p.name+" "+p.category).toLowerCase().includes(v)).map(p=>`<option value="${p.id}">${esc(p.name)} (${p.qty})</option>`).join("");pickP()}
+function rq(k){const n=new Date(),d=x=>iso(new Date(n.getFullYear(),n.getMonth(),n.getDate()+x));rt=iso(n);
+ if(k=="t")rf=rt;else if(k=="w")rf=d(-6);else if(k=="m")rf=rt.slice(0,8)+"01";else{rf=iso(new Date(n.getFullYear(),n.getMonth()-1,1));rt=iso(new Date(n.getFullYear(),n.getMonth(),0))}load()}
+function planBox(){const p=D.plan;if(!p)return"";if(!p.active)return`<div class="warn" style="background:var(--ob);color:var(--r)"><b>Subscription expired.</b> You can still view and download your data. ${esc(p.info)}</div>`;
+ return p.days<=5?`<div class="warn"><b>Your plan ends in ${p.days} day${p.days==1?"":"s"}.</b> ${esc(p.info)}</div>`:""}
+async function showReceipt(id){const r=await fetch("/api/receipt?id="+id),j=await r.json();if(!r.ok)return alert(j.error);let m=$("#rc");if(!m){m=document.createElement("div");m.id="rc";document.body.appendChild(m)}
+ m.className="rcw";m.innerHTML=`<div class="rcb"><div class="rcp"><h3 style="text-align:center;margin:0">${esc(j.shop)}</h3><div style="text-align:center;font-size:12px;color:#555">${esc(j.place)} ${esc(j.phone)}</div><hr>
+ <div style="font-size:12px">Receipt #${j.no} · ${j.date}${j.customer?`<br>Customer: ${esc(j.customer)}`:""}<br>Served by: ${esc(j.cashier)}</div>
+ <table>${j.items.map(i=>`<tr><td>${esc(i.pname)}<br><small>${i.qty} × ${fmt(i.price)}</small></td><td class="r">${fmt(i.qty*i.price)}</td></tr>`).join("")}</table><hr>
+ <h3 style="text-align:right;margin:0">Total ${fmt(j.total)}</h3>${j.credit?`<div style="text-align:right;font-size:12px">ON CREDIT — balance owed</div>`:""}<p style="text-align:center;font-size:12px;margin-bottom:0">Thank you for shopping with us!</p></div>
+ <div class="noprint" style="display:flex;gap:8px;margin-top:12px"><button class="btn" onclick="print()">Print</button><button class="btn o" onclick="$('#rc').remove()">Close</button></div></div>`}
+function authScreen(m="login"){let a=$("#au");if(!a){a=document.createElement("div");a.id="au";a.className="au";document.body.appendChild(a)}const L=m=="login";
+ a.innerHTML=`<div class="card auc"><h2 style="margin:0 0 4px"><span class="fly">✈</span> ShopPilot</h2><p style="margin:0 0 10px;color:var(--mut)">${L?"Log in to your shop":"Create your shop account — 14 days free"}</p>
+ ${L?"":`<label>Your name</label><input id="a_n" autocomplete="name"><label>Shop name</label><input id="a_s">`}<label>Email</label><input id="a_e" type="email" autocomplete="email">
+ <label>Password${L?"":" (8+ characters)"}</label><input id="a_p" type="password" autocomplete="${L?"current":"new"}-password" onkeydown="event.key=='Enter'&&authGo('${m}')">
+ <button class="btn" style="width:100%;margin-top:14px" onclick="authGo('${m}')">${L?"Log in":"Create account"}</button>
+ <p style="text-align:center;margin:14px 0 0"><a href="#" onclick="authScreen('${L?"register":"login"}');return false" style="color:var(--g)">${L?"New shop? Create an account":"Already registered? Log in"}</a></p></div>`}
+async function authGo(m){const g=i=>($("#"+i)||{}).value||"",b={email:g("a_e"),password:g("a_p")};if(m=="register"){b.name=g("a_n");b.shop=g("a_s")}
+ const r=await fetch("/api/"+m,{method:"POST",headers:{"Content-Type":"application/json","X-Requested-With":"ShopPilot"},body:JSON.stringify(b)}),j=await r.json();if(!r.ok)return alert(j.error);ME=j.user;enter()}
+async function boot(){try{ME=(await (await fetch("/api/me")).json()).user}catch(e){ME=null}if(!ME)return authScreen();enter()}
+function enter(){const a=$("#au");if(a)a.remove();const o=ME.role=="owner";TABS=o?["Overview","Shops","Account"]:ME.role=="staff"?["Sell","Stock","Settings"]:["Dashboard","Sell","Stock","Expenses","Debts","Reports","Settings"];tab=TABS[0];cart=[];load().then(()=>{if(tab=="Sell")pickP()})}
+async function logout(){try{await post("logout",{})}catch(e){}ME=null;D={};O=null;$("#app").innerHTML="";authScreen()}
+async function ownerLoad(){const r=await fetch("/api/owner");if(r.status==401)return authScreen();O=await r.json();D={shop:"Owner console",products:[],today:{},week:[],sales:[],expenses:[],debts:[]};draw()}
+function ownerOverview(){const o=O,mx=Math.max(1,...o.days.map(d=>d.v)),wm=Math.max(1,...o.weeks.map(w=>w.n)),soon=o.shops.filter(s=>s.plan_until<=new Date(Date.now()+7*864e5).toISOString().slice(0,10));
+ return `<div class="grid" style="margin-bottom:12px">${[["Shops",o.shops.length],["Active plans",o.active],["Expired",o.expired],["New shops (30d)",o.new30],["Shop sales (30d)",fmt(o.sales30)],["Your income (30d)",fmt(o.pay30)],["Income all time",fmt(o.pay_all)],["Users",o.users]].map(s=>`<div class="stat"><span>${s[0]}</span><b>${s[1]}</b></div>`).join("")}</div>
+ <div class="card"><h3>Sales across all shops — 14 days</h3><div class="bars">${o.days.map(d=>`<div><i style="height:${Math.max(3,d.v/mx*80)}px"></i>${d.d.slice(3)}</div>`).join("")}</div></div>
+ <div class="card"><h3>New shops per week (last 8 weeks)</h3><div class="bars">${o.weeks.map(w=>`<div><i style="height:${Math.max(3,w.n/wm*80)}px"></i>${w.n}</div>`).join("")}</div></div>
+ <div class="card"><h3>Top shops (30 days)</h3>${o.shops.length?`<table>${[...o.shops].sort((a,b)=>b.sales30-a.sales30).slice(0,6).map(s=>`<tr><td>${esc(s.name)}</td><td class="r">${fmt(s.sales30)}</td></tr>`).join("")}</table>`:`<div class="empty">No shops yet.</div>`}</div>
+ <div class="card"><h3>Renewals due (7 days) / expired</h3>${soon.length?`<table>${soon.map(s=>`<tr><td>${esc(s.name)}<br><small>${esc(s.email)}</small></td><td class="r">${s.plan_until<o.today?`<span class="pill out">expired</span>`:s.plan_until}</td><td><button class="btn s" onclick="oext(${s.id})">Record payment</button></td></tr>`).join("")}</table>`:`<div class="empty">Nothing due.</div>`}</div>`}
+function ownerShops(){return `<div class="card"><h3>All shops (${O.shops.length})</h3><input placeholder="🔍 Search shops or emails…" oninput="ft(this.value)"></div>${O.shops.map(s=>{const a=s.plan_until>=O.today;return `<div class="card" data-n="${esc((s.name+" "+s.email).toLowerCase())}"><div style="display:flex;justify-content:space-between;gap:8px"><b>${esc(s.name)}</b><span class="pill ${a?"ok":"out"}">${a?(s.paid_n?"paid":"trial"):"expired"}</span></div>
+ <div style="color:var(--mut);font-size:13px;margin:4px 0 8px">${esc(s.email)}<br>Plan until ${s.plan_until} · Sales 30d ${fmt(s.sales30)} · All time ${fmt(s.sales_all)} · Last sale ${s.last_sale||"—"}${s.disabled?` · <b class="neg">login disabled</b>`:""}</div>
+ <button class="btn s" onclick="oext(${s.id})">+ Record payment</button> <button class="btn s o" onclick="ouser(${s.uid},${s.disabled?0:1})">${s.disabled?"Enable":"Disable"} login</button> <button class="btn s o" onclick="orst(${s.uid})">Reset password</button></div>`}).join("")}`}
+async function oext(id){const a=prompt("Amount paid (KSh)","500");if(a===null)return;const ref=prompt("M-Pesa code / reference")||"",d=prompt("Days to add","30");if(!d)return;await post("owner",{act:"extend",shop_id:id,amount:a,ref,days:d});load()}
+async function ouser(id,dis){await post("owner",{act:"disable",user_id:id,disabled:dis});load()}
+async function orst(id){if(!confirm("Reset this user's password to a temporary one?"))return;const j=await post("owner",{act:"reset_pw",user_id:id});prompt("Temporary password — copy it and send it securely:",j.temp)}
+async function obk(){const j=await post("owner",{act:"backup"});alert("Backup created: "+j.file);load()}
+function account(){return (ME.role=="owner"?`<div class="card"><h3>💾 Database backups</h3><p style="margin:0 0 10px;color:var(--mut);font-size:13px">Automatic backups run every few hours and old ones are rotated. Download one regularly and keep it off the server.</p>${O.backups.map(b=>`<div style="font-size:13px">${esc(b.name)} · ${b.kb} KB</div>`).join("")||"<div class=empty>No backups yet.</div>"}<br><button class="btn" onclick="obk()">Backup now</button> <a class="btn o" href="/api/owner/backup.db" style="display:inline-block;text-decoration:none">Download fresh backup</a></div>`:"")+themeCard()+pwCard()}
+function themeCard(){return `<div class="card"><h3>🎨 Theme &amp; motion</h3><div class="themes">${THEMES.map(t=>`<button class="sw ${P.theme==t[0]?"on":""}" style="background:linear-gradient(135deg,${t[2]},${t[3]})" onclick="setP('theme','${t[0]}')"><span>${t[1]}</span></button>`).join("")}</div><label class="row"><input type="checkbox" ${P.motion?"checked":""} onchange="setP('motion',this.checked)"> Animations &amp; background glows</label></div>`}
+function pwCard(){return `<div class="card"><h3>🔐 Your account</h3><p style="margin:0 0 10px;color:var(--mut)">${esc(ME.name)} · ${esc(ME.email)}</p><div class="f"><div><label>Current password</label><input id="pw0" type="password" autocomplete="current-password"></div><div><label>New password (8+ characters)</label><input id="pw1" type="password" autocomplete="new-password"></div></div><button class="btn" onclick="chPw()">Change password</button> <button class="btn o" onclick="logout()">Log out</button></div>`}
+async function chPw(){await post("password",{current:val("pw0"),new:val("pw1")});alert("Password changed.");$("#pw0").value=$("#pw1").value=""}
+function staffCard(){return `<div class="card"><h3>👥 Staff accounts</h3><p style="margin:0 0 8px;color:var(--mut);font-size:13px">Staff can record sales only. They cannot see profits, buying prices, expenses or debts.</p>${(D.staff||[]).map(s=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--line)"><span>${esc(s.name)}<br><small>${esc(s.email)}</small></span><button class="btn s d" onclick="if(confirm('Remove this staff account?'))post('staff_remove',{id:${s.id}}).then(load)">Remove</button></div>`).join("")}<div class="f" style="margin-top:10px"><div><label>Name</label><input id="sf_n"></div><div><label>Email</label><input id="sf_e" type="email"></div><div><label>Password (8+)</label><input id="sf_p" type="password" autocomplete="new-password"></div></div><button class="btn" onclick="post('staff_add',{name:val('sf_n'),email:val('sf_e'),password:val('sf_p')}).then(load)">Add staff</button></div>`}
+function settings(){const mg=ME.role=="manager",pl=D.plan||{};
+ return (mg?`<div class="card"><h3>🏪 Shop information</h3><div class="f"><div><label>Shop name</label><input id="st_n" value="${esc(D.shop)}" maxlength="60"></div><div><label>Phone</label><input id="st_p" value="${esc(D.phone)}"></div><div><label>Location</label><input id="st_l" value="${esc(D.place)}"></div></div><button class="btn" onclick="saveShop()">Save shop info</button></div>
+ <div class="card"><h3>🧾 Subscription</h3><p style="margin:0">${pl.active?`Active until <b>${pl.until}</b> (${pl.days} days left)`:`<b class="neg">Expired on ${pl.until}</b> — you can view and download your data, but not add records.`}</p>${pl.info?`<p style="margin:8px 0 0;color:var(--mut)">${esc(pl.info)}</p>`:""}</div>`:`<div class="card"><h3>🏪 ${esc(D.shop)}</h3><p style="margin:0;color:var(--mut)">Staff account</p></div>`)
+ +themeCard()+`<div class="card"><h3>⚙ Preferences (this device)</h3><div class="f"><div><label>Currency label</label><input id="st_c" value="${esc(P.cur)}" maxlength="5"></div><div><label>Default low-stock level</label><input id="st_m" type="number" min="0" value="${P.minq}"></div></div><button class="btn" onclick="savePrefs()">Save preferences</button></div>`
+ +(mg?staffCard()+`<div class="card"><h3>💾 Your data</h3><p style="margin:0 0 10px;color:var(--mut)">Your records are stored on the server and backed up automatically. You can also download a copy.</p><a class="btn o" href="/api/export" style="display:inline-block;text-decoration:none">Download all my data</a></div>`:"")+pwCard()}
+async function saveShop(){await post("shop",{name:val("st_n"),phone:val("st_p"),place:val("st_l")});load()}
+function savePrefs(){setP("cur",val("st_c").trim()||"KSh");setP("minq",Math.max(0,+val("st_m")||0));load()}
+let _lt=null;const _d=draw;draw=function(){_d();if(_lt!==tab){_lt=tab;const m=$("#app");m.classList.remove("enter");void m.offsetWidth;m.classList.add("enter");setTimeout(()=>m.classList.remove("enter"),900)}};
+$("#shop").onclick=()=>{tab=ME&&ME.role=="owner"?"Account":"Settings";load()};
+boot();
+setInterval(()=>{if(ME&&(!document.activeElement||document.activeElement.tagName=="BODY"))load()},60000);
+new MutationObserver(()=>{if(tab=="Sell"&&$("#sp")&&!$("#spr").value)pickP()}).observe($("#app"),{childList:true});
+</script></body></html>
